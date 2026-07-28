@@ -9,9 +9,9 @@
     --paper:#FBF7EF; --dot:#EDE6D6; --ink:#1D211F; --gray:#5E645C; --mist:#8E948B; --line:#E3DCCB;
 
     /* 语义色只有两个:颜色只编码"刷新节奏" */
-    --keep:#2B4CA8;  --keep-w:#E9EDF9;   /* 稳定,只打磨不作废 */
-    --cyc:#DD6A2C;   --cyc-w:#FCEDE2;    /* 每季作废重出 */
-    --neu:#6E736C;   --neu-w:#EFEBE1;    /* 输入,不是交付物 */
+    --keep:#2B4CA8;  --keep-w:#E9EDF9;
+    --cyc:#DD6A2C;   --cyc-w:#FCEDE2;
+    --neu:#6E736C;   --neu-w:#EFEBE1;
 
     --serif:"Songti SC","Noto Serif SC",Georgia,serif;
     --sans:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
@@ -24,7 +24,7 @@
     color:var(--ink);font-family:var(--sans);font-size:13px;-webkit-font-smoothing:antialiased;
     padding:20px 18px 36px;
   }
-  .wrap{max-width:1180px;margin:0 auto;}
+  .wrap{max-width:1080px;margin:0 auto;}
 
   /* ===== HEAD ===== */
   .head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;}
@@ -45,39 +45,53 @@
   .mega svg{transition:transform .3s ease;}
   .mega.open svg{transform:rotate(180deg);}
 
-  /* 节奏徽章:图例和卡片上用的是同一个组件 */
-  .rb{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 9px;
-      font-size:10.5px;font-weight:700;white-space:nowrap;line-height:1.3;}
-  .rb::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;flex:0 0 auto;}
+  /* 节奏徽章(圆胶囊+圆点)= 多久换一次 */
+  .rb{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:2.5px 8px;
+      font-size:10px;font-weight:700;white-space:nowrap;line-height:1.3;}
+  .rb::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:0 0 auto;}
   .rb.keep{background:var(--keep-w);color:var(--keep);}
   .rb.cyc{background:var(--cyc-w);color:var(--cyc);}
   .rb.neu{background:var(--neu-w);color:var(--neu);}
+
+  /* 部门标签(方角、无点)= 谁负责,和节奏徽章形状不同,不会混 */
+  .dept{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:5px;
+        background:#fff;color:var(--gray);font-size:10px;font-weight:700;padding:2px 6px;white-space:nowrap;}
+  .dept.own{border-color:var(--ink);color:var(--ink);}
 
   .key{display:flex;align-items:center;gap:8px;flex-wrap:wrap;
        margin:13px 0 0;padding:9px 12px;border:1.5px solid var(--line);border-radius:11px;background:rgba(255,255,255,.55);}
   .key .lead{font-size:11px;color:var(--gray);font-weight:700;}
   .key .tail{font-size:10.5px;color:var(--mist);}
+  .key .sep{width:1px;height:16px;background:var(--line);}
 
-  /* ===== BOARD ===== */
-  .board{display:grid;grid-template-columns:246px 24px 1fr;margin-top:14px;align-items:start;}
-  @media (max-width:880px){.board{grid-template-columns:1fr;} .arrowcol{display:none;}}
-  .colhead{display:flex;align-items:baseline;gap:7px;margin-bottom:8px;}
-  .colhead h2{font-family:var(--serif);font-size:14.5px;font-weight:700;margin:0;}
-  .colhead small{font-size:10.5px;color:var(--mist);}
-  .arrowcol{display:flex;align-items:center;justify-content:center;align-self:stretch;padding-top:46px;color:var(--line);}
-  .arrowcol svg path{stroke-dasharray:4 5;animation:dash 2.6s linear infinite;}
-  @keyframes dash{to{stroke-dashoffset:-18;}}
+  /* ===== BOARD:输入 → 容器 → 输出 ===== */
+  .board{
+    position:relative;display:grid;margin-top:14px;align-items:start;
+    grid-template-columns:1fr 54px 1.28fr 54px 1.05fr;
+  }
+  .wires{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:visible;}
+  .board > div{position:relative;z-index:1;}
+  .colhead{display:flex;align-items:baseline;gap:7px;margin-bottom:8px;min-height:22px;}
+  .colhead h2{font-family:var(--serif);font-size:14px;font-weight:700;margin:0;}
+  .colhead small{font-size:10px;color:var(--mist);}
+
+  path.w{fill:none;stroke-width:1.7;}
+  path.w.neu{stroke:var(--neu);opacity:.42;}
+  path.w.keep{stroke:var(--keep);opacity:.72;}
+  path.w.cyc{stroke:var(--cyc);opacity:.72;}
+  path.w.mentor{stroke:var(--ink);opacity:.9;stroke-width:2.6;}
 
   /* ===== CARDS ===== */
-  details.c{background:#fff;border-radius:12px;border:2px solid var(--ink);overflow:hidden;margin-bottom:7px;
-            border-left-width:6px;}
-  details.c>summary{list-style:none;cursor:pointer;padding:8px 10px;display:flex;align-items:center;gap:8px;user-select:none;}
+  details.c{background:#fff;border-radius:12px;border:2px solid var(--ink);overflow:hidden;margin-bottom:7px;border-left-width:6px;}
+  details.c>summary{list-style:none;cursor:pointer;padding:7px 9px;display:flex;align-items:center;
+                    gap:5px 6px;flex-wrap:wrap;user-select:none;}
   details.c>summary::-webkit-details-marker{display:none;}
-  .nm{font-family:var(--serif);font-weight:700;font-size:13.5px;white-space:nowrap;}
-  .qty{font-family:var(--mono);font-size:10px;font-weight:700;color:#fff;background:var(--ink);border-radius:999px;padding:2px 7px;}
-  .one{font-size:11px;color:var(--gray);flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .btn{display:inline-flex;align-items:center;gap:4px;flex:0 0 auto;border-radius:999px;font-size:10.5px;
-       font-weight:700;color:var(--paper);background:var(--ink);padding:4px 10px;
+  .nm{font-family:var(--serif);font-weight:700;font-size:13px;white-space:nowrap;}
+  .qty{font-family:var(--mono);font-size:9.5px;font-weight:700;color:#fff;background:var(--ink);border-radius:999px;padding:1.5px 6px;white-space:nowrap;}
+  .one{font-size:10.5px;color:var(--gray);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
+  .brk{flex-basis:100%;height:0;}
+  .btn{display:inline-flex;align-items:center;gap:3px;flex:0 0 auto;margin-left:auto;border-radius:999px;
+       font-size:10px;font-weight:700;color:var(--paper);background:var(--ink);padding:3.5px 9px;
        box-shadow:2px 2px 0 var(--mist);transition:transform .14s ease;}
   details.c>summary:hover .btn{transform:translate(-1px,-1px);}
   .btn .ch{transition:transform .3s ease;}
@@ -85,32 +99,53 @@
   details.c[open] .btn .a{display:none;}
   details.c:not([open]) .btn .b{display:none;}
 
-  .dt{padding:9px 11px 11px;border-top:1.5px dashed var(--line);font-size:11.5px;color:var(--gray);line-height:1.55;}
+  .dt{padding:8px 10px 10px;border-top:1.5px dashed var(--line);font-size:11.5px;color:var(--gray);line-height:1.55;}
   .dt p{margin:0 0 5px;} .dt p:last-child{margin:0;} .dt b{color:var(--ink);}
-  .kv{display:grid;grid-template-columns:26px 1fr;gap:5px 7px;margin:0 0 6px;}
-  .kv dt{font-family:var(--mono);font-size:9px;font-weight:700;color:#fff;background:var(--ink);
-         border-radius:5px;height:17px;display:flex;align-items:center;justify-content:center;}
-  .kv dd{margin:0;}
+  .dt .lbl{font-family:var(--mono);font-size:9px;font-weight:700;color:#fff;background:var(--ink);
+           border-radius:4px;padding:1px 5px;margin-right:5px;}
   .tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px;}
-  .tag{border-radius:999px;padding:3px 8px;font-size:10.5px;font-weight:600;background:var(--neu-w);color:var(--gray);}
+  .tag{border-radius:999px;padding:2.5px 7px;font-size:10px;font-weight:600;background:var(--neu-w);color:var(--gray);}
 
-  /* 只有左边框和徽章带语义色 */
   details.c.keep{border-left-color:var(--keep);}
   details.c.cyc{border-left-color:var(--cyc);}
-  details.c.neu{border-left-color:var(--neu);border-color:var(--neu);border-left-width:6px;}
-  details.c.cyc .tag{background:var(--cyc-w);color:var(--cyc);}
+  details.c.neu{border-left-color:var(--neu);border-color:var(--neu);}
   details.c.keep .tag{background:var(--keep-w);color:var(--keep);}
+  details.c.cyc .tag{background:var(--cyc-w);color:var(--cyc);}
+
+  /* 带教:全项目最大的投入,单独强调 */
+  details.c.mentor{border-color:var(--ink);border-left-color:var(--ink);border-left-width:8px;
+                   box-shadow:3px 3px 0 var(--ink);}
+  .star{font-size:9.5px;font-weight:800;color:var(--paper);background:var(--ink);
+        border-radius:4px;padding:2px 6px;white-space:nowrap;}
 
   /* ===== CONTAINER BOXES ===== */
-  .box{border:2px dashed var(--ink);border-radius:14px;padding:9px 10px 3px;margin-bottom:10px;background:rgba(255,255,255,.4);}
+  .box{border:2px dashed var(--ink);border-radius:14px;padding:8px 9px 2px;margin-bottom:9px;background:rgba(255,255,255,.4);}
   .box.none{border-style:dotted;border-color:var(--mist);}
-  .box-hd{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;margin-bottom:7px;}
-  .box-hd .badge{font-family:var(--mono);font-size:9.5px;font-weight:700;background:var(--ink);color:var(--paper);border-radius:999px;padding:2px 8px;}
+  .box-hd{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;margin-bottom:6px;}
+  .box-hd .badge{font-family:var(--mono);font-size:9px;font-weight:700;background:var(--ink);color:var(--paper);border-radius:999px;padding:2px 7px;}
   .box.none .box-hd .badge{background:var(--mist);}
-  .box-hd .t{font-family:var(--serif);font-size:13px;font-weight:700;}
-  .box-hd .s{font-size:10.5px;color:var(--mist);}
+  .box-hd .t{font-family:var(--serif);font-size:12.5px;font-weight:700;}
+  .box-hd .s{font-size:10px;color:var(--mist);}
+
+  /* 八大品类:输出层是八个并列实例,直接摊开在卡面上 */
+  .cats{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;width:100%;margin-top:6px;}
+  .cat{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+       padding:5px 2px 4px;border:1.5px solid var(--cyc);border-radius:8px;
+       background:var(--cyc-w);color:var(--cyc);line-height:1;}
+  .cat i{font-style:normal;font-size:9.5px;font-weight:700;letter-spacing:.02em;}
+  .cat svg{display:block;}
+
+  .copylink{display:flex;align-items:center;gap:5px;margin:-1px 0 5px 13px;font-size:10px;color:var(--keep);font-weight:700;}
+  .copylink svg{flex:0 0 auto;}
 
   .foot{margin-top:12px;font-size:10.5px;color:var(--mist);text-align:center;}
+
+  @media (max-width:1000px){
+    .board{grid-template-columns:1fr;}
+    .board .gap{display:none;}
+    .wires{display:none;}
+    .colhead{margin-top:14px;}
+  }
 </style>
 </head>
 <body>
@@ -118,10 +153,10 @@
 
   <div class="head">
     <div>
-      <div class="eyebrow">企划AI · 交付物逻辑图 v7</div>
-      <h1>东西装在哪 → 装的是什么 → 一共产出什么</h1>
+      <div class="eyebrow">企划AI · 交付物逻辑图 v10</div>
+      <h1>五类输入 → 两种容器 → 四类输出</h1>
       <div class="sub">
-        <b>两种容器</b> Project · Skill<i>／</i><b>五类输入</b> 按AI要加工多少排<i>／</i><b>四类输出</b> 规则 · 结论 · 方法 · 能力
+        <b>输入</b>按AI要加工多少排<i>／</i><b>容器</b>Project · Skill<i>／</i><b>输出</b>规则 · 结论 · 方法 · 能力
       </div>
     </div>
     <button class="mega" id="all">
@@ -131,92 +166,129 @@
   </div>
 
   <div class="key">
-    <span class="lead">颜色只区分一件事:多久换一次</span>
-    <span class="rb keep">稳定,只打磨不作废 v1→v2</span>
-    <span class="rb cyc">每季作废重出 26SS</span>
-    <span class="rb neu">输入,不是交付物</span>
-    <span class="tail">种类由所在的框决定,不靠颜色</span>
+    <span class="lead">圆徽章=多久换一次</span>
+    <span class="rb keep">稳定 v1→v2</span>
+    <span class="rb cyc">每季重出 26SS</span>
+    <span class="rb neu">输入</span>
+    <span class="sep"></span>
+    <span class="lead">方标签=谁负责</span>
+    <span class="dept own">企划部</span>
+    <span class="dept">数研</span>
+    <span class="dept">创始人</span>
+    <span class="sep"></span>
+    <span class="tail">连线同色 · 粗黑线是全项目最大的投入</span>
   </div>
 
-  <div class="board">
+  <div class="board" id="board">
+    <svg class="wires" id="wires" xmlns="http://www.w3.org/2000/svg"></svg>
 
-    <!-- 左:五类输入 -->
+    <!-- ========== 左:五类输入 ========== -->
     <div>
-      <div class="colhead"><h2>五类输入</h2><small>零加工 → 最费人</small></div>
+      <div class="colhead"><h2>五类输入</h2><small>零加工→最费人</small></div>
 
-      <details class="c neu">
-        <summary><span class="nm">框架</span><span class="one">已定好的判断标准和结构 →方法论层</span><span class="btn"><span class="a">看</span><span class="b">收</span><svg class="ch" width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></span></summary>
-        <div class="dt"><p><b>零加工,直接挂载</b>;稳定,进方法论层。</p><p style="color:var(--mist)">创始人原则指引 · 各板块框架初稿</p></div>
+      <details class="c neu" id="in-fw">
+        <summary><span class="nm">框架</span><span class="btn"><span class="a">看</span><span class="b">收</span><svg class="ch" width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></span><span class="brk"></span><span class="dept">创始人</span><span class="dept">企划部</span><span class="one">已定好的标准和结构</span></summary>
+        <div class="dt"><p><b>零加工,直接挂载。</b></p><p style="color:var(--mist)">创始人原则指引 · 各板块框架初稿</p></div>
       </details>
 
-      <details class="c neu">
-        <summary><span class="nm">定论</span><span class="one">上游已拍板的当季方向 →输出层</span><span class="btn"><span class="a">看</span><span class="b">收</span><svg class="ch" width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></span></summary>
-        <div class="dt"><p><b>零加工,直接当依据</b>;当季,进输出层。</p><p style="color:var(--mist)">战略会本品类任务 · 会上决策结果 · 季度方向指引</p></div>
+      <details class="c neu" id="in-vd">
+        <summary><span class="nm">定论</span><span class="btn"><span class="a">看</span><span class="b">收</span><svg class="ch" width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></span><span class="brk"></span><span class="dept">创始人</span><span class="dept">战略会</span><span class="one">已拍板的当季方向</span></summary>
+        <div class="dt"><p><b>零加工,直接当依据。</b></p><p style="color:var(--mist)">战略会本品类任务 · 会上决策结果 · 季度方向指引</p></div>
       </details>
 
-      <details class="c neu">
-        <summary><span class="nm">数据</span><span class="one">客观数字与事实 →输出层</span><span class="btn"><span class="a">看</span><span class="b">收</span><svg class="ch" width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></span></summary>
+      <details class="c neu" id="in-dt">
+        <summary><span class="nm">数据</span><span class="btn"><span class="a">看</span><span class="b">收</span><svg class="ch" width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></span><span class="brk"></span><span class="dept">数研</span><span class="dept">企划部</span><span class="one">客观数字与事实</span></summary>
         <div class="dt"><p><b>AI读取计算</b>;人工上传,agent化后数研直连。</p><p style="color:var(--mist)">本品类专属数据 · 本季目标值</p></div>
       </details>
 
-      <details class="c neu">
-        <summary><span class="nm">讨论</span><span class="one">会上的过程记录 →方法论层</span><span class="btn"><span class="a">看</span><span class="b">收</span><svg class="ch" width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></span></summary>
+      <details class="c neu" id="in-ds">
+        <summary><span class="nm">讨论</span><span class="btn"><span class="a">看</span><span class="b">收</span><svg class="ch" width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></span><span class="brk"></span><span class="dept">飞书自动转写</span><span class="one">会上的过程记录</span></summary>
         <div class="dt"><p><b>需AI协助提炼</b>背后的思考逻辑。</p><p style="color:var(--mist)">脑暴会 · 评审会 · 营销策略会纪要</p></div>
       </details>
 
-      <details class="c neu" style="border-style:dashed;border-left-style:solid;">
-        <summary><span class="nm">带教</span><span class="one">负责人未成文的口头判断 →方法论层·Skill</span><span class="btn"><span class="a">看</span><span class="b">收</span><svg class="ch" width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></span></summary>
-        <div class="dt"><p><b>只能靠一轮轮对话磨出来</b>——不在任何采购清单里,却是整个项目最大的投入。</p><p style="color:var(--mist)">冷启动挑3-5份历史企划案标重点 · 定Skill场景、试跑纠偏</p></div>
+      <details class="c neu mentor" id="in-mt">
+        <summary><span class="nm">带教</span><span class="star">最大投入</span><span class="btn"><span class="a">看</span><span class="b">收</span><svg class="ch" width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></span><span class="brk"></span><span class="dept own">企划部负责人</span><span class="one">未成文的口头判断</span></summary>
+        <div class="dt"><p><b>只能靠一轮轮对话磨出来</b>——不在任何采购清单里,却是整个项目最大的投入,也是唯一没法分担的一项。</p><p style="color:var(--mist)">冷启动挑3-5份历史企划案标重点 · 定Skill场景、试跑纠偏</p></div>
       </details>
     </div>
 
-    <div class="arrowcol">
-      <svg width="20" height="80" viewBox="0 0 20 80" fill="none"><path d="M10 4v72" stroke="currentColor" stroke-width="2"/></svg>
-    </div>
+    <div class="gap"></div>
 
-    <!-- 右:容器与输出 -->
+    <!-- ========== 中:两种容器 ========== -->
     <div>
-      <div class="colhead"><h2>两种容器 · 四类输出</h2><small>「能力」没有容器</small></div>
+      <div class="colhead"><h2>两种容器</h2><small>东西装在哪</small></div>
 
       <div class="box">
-        <div class="box-hd"><span class="badge">容器一</span><span class="t">Project</span><span class="s">AI的独立工作台,里面放它干这件事需要的资料;工作台之间不通,资料不会串 —— 共9个</span></div>
+        <div class="box-hd"><span class="badge">容器一</span><span class="t">Project</span><span class="s">工作台之间不通 · 共9个</span></div>
 
-        <details class="c keep">
-          <summary><span class="nm">① 方法论层</span><span class="qty">×1</span><span class="rb keep">稳定 v1→v2</span><span class="one">出「规则」· 8品类共用</span><span class="btn"><span class="a">看输入输出</span><span class="b">收起</span><svg class="ch" width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></span></summary>
+        <details class="c keep" id="ct-ml">
+          <summary><span class="nm">① 方法论层</span><span class="qty">×1</span><span class="btn"><span class="a">看</span><span class="b">收</span><svg class="ch" width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></span><span class="brk"></span><span class="rb keep">稳定 v1→v2</span><span class="dept own">企划部</span><span class="one">8品类共用</span></summary>
           <div class="dt">
-            <dl class="kv">
-              <dt>入</dt><dd>框架 ＋ 讨论 ＋ <b>带教</b></dd>
-              <dt>出</dt><dd><b>「规则」</b>通用:品牌内核 · 各板块结论综合规则<span style="color:var(--mist)">(远期)</span>；板块专属:复盘规则手册 · 企划案框架+自检清单 · 趋势规则手册</dd>
-            </dl>
-            <p><b>方法论层的完整度 = 各业务板块AI化的完整度</b>,板块AI化一个,两层各多一份。</p>
+            <p><span class="lbl">入</span>框架 ＋ 讨论 ＋ <b>带教</b></p>
+            <p><span class="lbl">出</span>「规则」——装什么见右栏</p>
+            <p style="color:var(--keep)"><b>方法论层的完整度 = 各业务板块AI化的完整度。</b></p>
           </div>
         </details>
 
-        <details class="c cyc">
-          <summary><span class="nm">② 输出层</span><span class="qty">×8</span><span class="rb cyc">每季重出 26SS</span><span class="one">出「结论」· 每品类一个</span><span class="btn"><span class="a">看输入输出</span><span class="b">收起</span><svg class="ch" width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></span></summary>
+        <div class="copylink">
+          <svg width="10" height="14" viewBox="0 0 10 14" fill="none"><path d="M5 1v9m0 3-3.2-4h6.4z" stroke="currentColor" stroke-width="1.6" fill="currentColor"/></svg>
+          ①的规则副本下发给每个品类
+        </div>
+
+        <details class="c cyc" id="ct-op">
+          <summary><span class="nm">② 输出层</span><span class="qty">×8</span><span class="btn"><span class="a">看</span><span class="b">收</span><svg class="ch" width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></span><span class="brk"></span><span class="rb cyc">每季重出 26SS</span><span class="dept own">企划部</span><span class="one">每品类一个</span>
+            <span class="cats">
+              <span class="cat" title="T恤">
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M8.6 3.4 4 5.4 2.6 9.6l3 1v10h12.8v-10l3-1L20 5.4l-4.6-2c-1 2.5-5.8 2.5-6.8 0Z"/></svg>
+                <i>T恤</i>
+              </span>
+              <span class="cat" title="裤子">
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M6.4 3h11.2l1 18h-4.8L12 11.4 10.2 21H5.4Z"/><path d="M6.4 6.6h11.2"/></svg>
+                <i>裤子</i>
+              </span>
+              <span class="cat" title="内裤">
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M3.4 6.6h17.2l-1.5 7.6c-1.2 3.4-4.6 3.6-6-.6L12 11.8l-1.1 1.8c-1.4 4.2-4.8 4-6-.6Z"/></svg>
+                <i>内裤</i>
+              </span>
+              <span class="cat" title="文胸">
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M3 10.4c0 4.6 3.4 6.4 5.4 3.4M12 12.2c-1.4 0-2.7.6-3.6 1.6M12 12.2c1.4 0 2.7.6 3.6 1.6M15.6 13.8c2 3 5.4 1.2 5.4-3.4"/><path d="M3 10.4 6.4 6.2M21 10.4 17.6 6.2"/></svg>
+                <i>文胸</i>
+              </span>
+              <span class="cat" title="保暖内衣">
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M8.6 3.4 3.4 5.6 2 13.4l3.2.5V21h13.6v-7.1l3.2-.5-1.4-7.8-5.2-2.2c-1 2.5-5.8 2.5-6.8 0Z"/><path d="M9 16.4h6M9 18.6h6"/></svg>
+                <i>保暖内衣</i>
+              </span>
+              <span class="cat" title="袜子">
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M9 3h5.6v10.2l3.6 3.4c1.6 1.6.6 4.2-1.8 4.2-1 0-1.8-.4-2.5-1.1L9 15.4Z"/><path d="M9 6.2h5.6"/></svg>
+                <i>袜子</i>
+              </span>
+              <span class="cat" title="服配">
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M4.2 15.4c0-5.4 3.4-8.6 7.8-8.6s7.8 3.2 7.8 8.6Z"/><path d="M2.4 15.4h19.2"/><path d="M12 6.8V3.6"/></svg>
+                <i>服配</i>
+              </span>
+              <span class="cat" title="家居套装">
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M3.4 8.4 12 2.6l8.6 5.8"/><path d="M9.4 11.6 7 12.8l.9 2.4M9.4 11.6c1 1.4 4.2 1.4 5.2 0M14.6 11.6l2.4 1.2-.9 2.4M7.9 15.2V21h8.2v-5.8"/></svg>
+                <i>家居套装</i>
+              </span>
+            </span>
+          </summary>
           <div class="dt">
-            <dl class="kv">
-              <dt>入</dt><dd>①的规则副本 ＋ 定论 ＋ 数据</dd>
-              <dt>出</dt><dd><b>「结论」</b>通用:本品类当季综合策略<span style="color:var(--mist)">(远期)</span>；板块专属:复盘归因结论 · 自检报告+当季策略建议方向 · 趋势总结+优化建议</dd>
-            </dl>
-            <div class="tags"><span class="tag">T恤</span><span class="tag">裤子</span><span class="tag">内裤</span><span class="tag">文胸</span><span class="tag">保暖内衣</span><span class="tag">袜子</span><span class="tag">服配</span><span class="tag">家居套装</span></div>
-            <p style="margin-top:6px"><b>拆两层的唯一理由</b>:一份规则要配八份互相隔离的品类数据。</p>
+            <p><span class="lbl">入</span>①的规则副本 ＋ 定论 ＋ 数据</p>
+            <p><span class="lbl">出</span>「结论」——装什么见右栏</p>
+            <p><b>拆两层的唯一理由</b>:一份规则要配八份互相隔离的品类数据。八个工作台结构完全一样,只是数据不同。</p>
           </div>
         </details>
       </div>
 
       <div class="box">
-        <div class="box-hd"><span class="badge">容器二</span><span class="t">Skill</span><span class="s">一份操作说明,不放在任何工作台里,写一次跨Project通用</span></div>
+        <div class="box-hd"><span class="badge">容器二</span><span class="t">Skill</span><span class="s">不放在任何工作台里 · 跨Project通用</span></div>
 
-        <details class="c keep">
-          <summary><span class="nm">Skill</span><span class="qty">持续新增</span><span class="rb keep">稳定,做法变了才改</span><span class="one">出「方法」· 拿到规则之后怎么一步步做</span><span class="btn"><span class="a">看输入输出</span><span class="b">收起</span><svg class="ch" width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></span></summary>
+        <details class="c keep" id="ct-sk">
+          <summary><span class="nm">Skill</span><span class="qty">持续新增</span><span class="btn"><span class="a">看</span><span class="b">收</span><svg class="ch" width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></span><span class="brk"></span><span class="rb keep">做法变了才改</span><span class="dept own">企划部主导</span><span class="dept">数研支持</span></summary>
           <div class="dt">
-            <dl class="kv">
-              <dt>入</dt><dd><b>带教</b>:负责人定场景、试跑纠偏</dd>
-              <dt>出</dt><dd><b>「方法」</b>跨Project复用的执行步骤,不依赖具体品类实例</dd>
-            </dl>
-            <div class="tags"><span class="tag">企划方案自检审阅</span><span class="tag">自检清单缺口识别</span><span class="tag">4P归因初稿生成</span><span class="tag">趋势建议生成</span></div>
-            <p style="margin-top:6px">规则=什么算好,Skill=怎么做到;拍板权始终在负责人。<b>AI内训方法论(附录三)同样产出「方法」,也不挂任何工作台。</b></p>
+            <p><span class="lbl">入</span><b>带教</b>:负责人定场景、试跑纠偏</p>
+            <p><span class="lbl">出</span>「方法」——装什么见右栏</p>
+            <p style="color:var(--keep)">规则=什么算好,Skill=怎么做到;拍板权始终在负责人。</p>
           </div>
         </details>
       </div>
@@ -224,30 +296,135 @@
       <div class="box none">
         <div class="box-hd"><span class="badge">无容器</span><span class="t">基建</span><span class="s">不是文档,是跑起来的系统</span></div>
 
-        <details class="c keep">
-          <summary><span class="nm">能力</span><span class="qty">数研为主</span><span class="rb keep">持续维护,不重建</span><span class="one">让前三样真正跑起来的底座</span><span class="btn"><span class="a">看清单</span><span class="b">收起</span><svg class="ch" width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></span></summary>
+        <details class="c keep" id="ct-if">
+          <summary><span class="nm">基建</span><span class="btn"><span class="a">看</span><span class="b">收</span><svg class="ch" width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></span><span class="brk"></span><span class="rb keep">持续维护,不重建</span><span class="dept own">数研</span><span class="one">不消耗五类输入</span></summary>
           <div class="dt">
-            <p><b>账号与网络</b>　企业版账号+数据安全方案,稳定运行 —— 数研</p>
-            <p><b>飞书自动化通道</b>　Project产出自动推送进飞书,团队无感知 —— 数研</p>
-            <p><b>8大品类初版agent</b>　触发方式从人主动问,升级成到点自动出结论、异常自动查;<b>容器不变</b> —— 企划部主导,数研支持</p>
+            <p><span class="lbl">入</span>无——不靠喂资料,靠数研开发</p>
+            <p><span class="lbl">出</span>「能力」——装什么见右栏</p>
+            <p style="color:var(--keep)">它不产文档,是让前三样真正跑起来的底座。</p>
           </div>
         </details>
       </div>
-
     </div>
+
+    <div class="gap"></div>
+
+    <!-- ========== 右:四类输出 ========== -->
+    <div>
+      <div class="colhead"><h2>四类输出</h2><small>一共产出什么</small></div>
+
+      <details class="c keep" id="ot-rl">
+        <summary><span class="nm">规则</span><span class="btn"><span class="a">看</span><span class="b">收</span><svg class="ch" width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></span><span class="brk"></span><span class="rb keep">v1→v2</span><span class="dept own">企划部</span><span class="one">什么算好</span></summary>
+        <div class="dt">
+          <p><b>通用</b>:品牌内核 · 各板块结论综合规则<span style="color:var(--mist)">(远期)</span></p>
+          <p><b>板块专属</b>:复盘规则手册 · 企划案框架+自检清单 · 趋势规则手册</p>
+          <p style="color:var(--keep)">只打磨不作废,板块AI化一个就多一份。</p>
+        </div>
+      </details>
+
+      <details class="c cyc" id="ot-cl">
+        <summary><span class="nm">结论</span><span class="btn"><span class="a">看</span><span class="b">收</span><svg class="ch" width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></span><span class="brk"></span><span class="rb cyc">26SS</span><span class="dept own">企划部</span><span class="one">这一季的答案</span></summary>
+        <div class="dt">
+          <p><b>通用</b>:本品类当季综合策略<span style="color:var(--mist)">(远期)</span></p>
+          <p><b>板块专属</b>:复盘归因结论 · 自检报告+当季策略建议方向 · 趋势总结+优化建议</p>
+          <p style="color:var(--cyc)">每季作废重出,不沿用上一期。</p>
+        </div>
+      </details>
+
+      <details class="c keep" id="ot-mt">
+        <summary><span class="nm">方法</span><span class="btn"><span class="a">看</span><span class="b">收</span><svg class="ch" width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></span><span class="brk"></span><span class="rb keep">稳定</span><span class="dept own">企划部</span><span class="one">怎么一步步做</span></summary>
+        <div class="dt">
+          <p><b>Skill</b>:跨Project复用的执行步骤,不依赖具体品类实例</p>
+          <div class="tags"><span class="tag">企划方案自检审阅</span><span class="tag">自检清单缺口识别</span><span class="tag">4P归因初稿生成</span><span class="tag">趋势建议生成</span></div>
+          <p style="margin-top:6px"><b>AI内训方法论</b>(附录三):规则提炼判断清单+Skill纠偏方法,<b>可跨部门复用</b>,同样不挂任何工作台。</p>
+        </div>
+      </details>
+
+      <details class="c keep" id="ot-cp">
+        <summary><span class="nm">能力</span><span class="btn"><span class="a">看</span><span class="b">收</span><svg class="ch" width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></span><span class="brk"></span><span class="rb keep">不重建</span><span class="dept own">数研</span><span class="one">跑起来的系统</span></summary>
+        <div class="dt">
+          <p><b>账号与网络</b>　企业版账号+数据安全方案 —— 数研</p>
+          <p><b>飞书自动化通道</b>　Project产出自动推送进飞书 —— 数研</p>
+          <p><b>8大品类初版agent</b>　从人主动问→到点自动出结论、异常自动查 —— <b>企划部主导,数研支持</b></p>
+        </div>
+      </details>
+    </div>
+
   </div>
 
-  <div class="foot">收起状态即完整骨架 · 点深色按钮看某一项的输入输出</div>
+  <div class="foot">收起状态即完整骨架 · 顺着连线看一条完整链路 · 点深色按钮看细节</div>
 </div>
 
 <script>
 (function(){
-  var b=document.getElementById('all'),l=b.querySelector('.lb');
-  function ds(){return [].slice.call(document.querySelectorAll('details.c'));}
-  function sync(){var a=ds(),o=a.every(function(d){return d.open;});b.classList.toggle('open',o);l.textContent=o?'收起全部细节':'展开全部细节';}
-  b.addEventListener('click',function(){var a=ds(),o=a.every(function(d){return d.open;});a.forEach(function(d){d.open=!o;});sync();});
-  ds().forEach(function(d){d.addEventListener('toggle',sync);});
-  sync();
+  var EDGES = [
+    ['in-fw','ct-ml','neu'],
+    ['in-ds','ct-ml','neu'],
+    ['in-vd','ct-op','neu'],
+    ['in-dt','ct-op','neu'],
+    ['in-mt','ct-ml','mentor'],
+    ['in-mt','ct-sk','mentor'],
+    ['ct-ml','ot-rl','keep'],
+    ['ct-op','ot-cl','cyc'],
+    ['ct-sk','ot-mt','keep'],
+    ['ct-if','ot-cp','keep']
+  ];
+
+  var COLORS = {neu:['#6E736C','.42'], keep:['#2B4CA8','.72'], cyc:['#DD6A2C','.72'], mentor:['#1D211F','.9']};
+
+  var board = document.getElementById('board');
+  var svg   = document.getElementById('wires');
+
+  function draw(){
+    if(window.innerWidth <= 1000){ svg.innerHTML=''; return; }
+    var b = board.getBoundingClientRect();
+    svg.setAttribute('width', b.width);
+    svg.setAttribute('height', b.height);
+    svg.setAttribute('viewBox', '0 0 ' + b.width + ' ' + b.height);
+
+    var defs = '<defs>' + Object.keys(COLORS).map(function(k){
+      return '<marker id="m-'+k+'" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="'+(k==='mentor'?5.2:6)+
+             '" markerHeight="'+(k==='mentor'?5.2:6)+'" orient="auto-start-reverse">' +
+             '<path d="M0 1.2 L9 5 L0 8.8 z" fill="'+COLORS[k][0]+'" opacity="'+COLORS[k][1]+'"/></marker>';
+    }).join('') + '</defs>';
+
+    var out = EDGES.map(function(e){
+      var a = document.getElementById(e[0]), c = document.getElementById(e[1]);
+      if(!a || !c) return '';
+      var ar = a.getBoundingClientRect(), cr = c.getBoundingClientRect();
+      var x1 = ar.right - b.left;
+      var y1 = ar.top  - b.top + Math.min(ar.height/2, 22);
+      var x2 = cr.left - b.left - 9;
+      var y2 = cr.top  - b.top + Math.min(cr.height/2, 22);
+      var dx = Math.max(24, (x2 - x1) * 0.5);
+      return '<path class="w '+e[2]+'" marker-end="url(#m-'+e[2]+')" d="M'+x1+' '+y1+
+             ' C'+(x1+dx)+' '+y1+', '+(x2-dx)+' '+y2+', '+x2+' '+y2+'"/>';
+    }).join('');
+
+    svg.innerHTML = defs + out;
+  }
+
+  function schedule(){ window.requestAnimationFrame(draw); }
+
+  var b = document.getElementById('all'), l = b.querySelector('.lb');
+  function ds(){ return [].slice.call(document.querySelectorAll('details.c')); }
+  function sync(){
+    var a = ds(), o = a.every(function(d){return d.open;});
+    b.classList.toggle('open', o);
+    l.textContent = o ? '收起全部细节' : '展开全部细节';
+    schedule();
+  }
+  b.addEventListener('click', function(){
+    var a = ds(), o = a.every(function(d){return d.open;});
+    a.forEach(function(d){ d.open = !o; });
+    sync();
+  });
+  ds().forEach(function(d){ d.addEventListener('toggle', sync); });
+
+  window.addEventListener('resize', schedule);
+  window.addEventListener('load', schedule);
+  if(document.fonts && document.fonts.ready){ document.fonts.ready.then(schedule); }
+  schedule();
 })();
 </script>
 </body>
