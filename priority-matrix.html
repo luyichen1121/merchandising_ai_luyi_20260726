@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>企划AI · 8大业务板块优先级矩阵</title>
+<style>
+  :root{
+    --paper:#FBF7EF; --dot:#EDE6D6; --ink:#1D211F; --gray:#5E645C; --mist:#8E948B; --line:#E3DCCB;
+
+    /* 语义色只有两个:颜色只编码"本轮AI取舍" */
+    --hot:#DD6A2C;  --hot-w:#FCEDE2;   /* 6个月重点AI化 */
+    --hum:#2B4CA8;  --hum-w:#E9EDF9;   /* AI不做,人要投入 */
+    --neu:#6E736C;  --neu-w:#EFEBE1;   /* 本轮不启动 */
+
+    --serif:"Songti SC","Noto Serif SC",Georgia,serif;
+    --sans:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{
+    background:radial-gradient(var(--dot) 1.1px,transparent 1.1px) 0 0/20px 20px,var(--paper);
+    color:var(--ink);font-family:var(--sans);font-size:13px;-webkit-font-smoothing:antialiased;
+    padding:20px 18px 36px;
+  }
+  .wrap{max-width:1180px;margin:0 auto;}
+
+  /* ===== HEAD ===== */
+  .eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--mist);margin-bottom:5px;}
+  h1{font-family:var(--serif);font-size:clamp(18px,2.2vw,23px);font-weight:700;margin:0 0 7px;}
+  .sub{font-size:11.5px;color:var(--gray);}
+  .sub b{color:var(--ink);font-weight:700;}
+  .sub i{font-style:normal;color:var(--line);margin:0 7px;}
+
+  /* 圆胶囊+圆点 = 本轮AI取舍(颜色维度) */
+  .rb{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:2.5px 8px;
+      font-size:10px;font-weight:700;white-space:nowrap;line-height:1.3;}
+  .rb::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:0 0 auto;}
+  .rb.hot{background:var(--hot-w);color:var(--hot);}
+  .rb.hum{background:var(--hum-w);color:var(--hum);}
+  .rb.neu{background:var(--neu-w);color:var(--neu);}
+
+  /* 方角、无点 = 优先级(和颜色维度不同,形状区分) */
+  .p{display:inline-flex;align-items:center;border:1.5px solid var(--ink);border-radius:5px;
+     background:#fff;color:var(--ink);font-family:var(--mono);font-size:10px;font-weight:700;
+     padding:1px 5px;white-space:nowrap;letter-spacing:.02em;}
+
+  .key{display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+       margin:13px 0 0;padding:9px 12px;border:1.5px solid var(--line);border-radius:11px;background:rgba(255,255,255,.55);}
+  .key .lead{font-size:11px;color:var(--gray);font-weight:700;}
+  .key .tail{font-size:10.5px;color:var(--mist);}
+  .key .sep{width:1px;height:16px;background:var(--line);}
+
+  /* ===== LAYOUT ===== */
+  .stage{display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start;margin-top:14px;}
+
+  /* ===== MATRIX ===== */
+  .plot{display:flex;gap:8px;}
+  .ytitle{writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--serif);font-weight:700;
+          font-size:12.5px;display:flex;align-items:center;justify-content:center;gap:6px;
+          padding:2px 0 26px;color:var(--ink);}
+  .ytitle small{font-family:var(--sans);font-size:10px;color:var(--mist);font-weight:400;}
+
+  .grid{flex:1;display:grid;grid-template-columns:38px repeat(4,1fr);}
+  .yl{display:flex;align-items:center;justify-content:flex-end;padding-right:7px;
+      font-size:10.5px;font-weight:700;color:var(--gray);border-right:1.5px solid var(--line);}
+  .xl{text-align:center;padding-top:6px;font-size:10.5px;font-weight:700;color:var(--gray);}
+  .cell{border-right:1px dashed var(--line);border-bottom:1px dashed var(--line);
+        min-height:82px;padding:5px;display:flex;}
+  .grid .yl{border-bottom:1px dashed var(--line);}
+  .corner{border-right:1.5px solid var(--line);}
+  .xaxis{border-top:1.5px solid var(--line);}
+  .xtitle{grid-column:2 / -1;text-align:right;font-family:var(--serif);font-weight:700;font-size:12.5px;
+          padding-top:4px;}
+  .xtitle small{font-family:var(--sans);font-size:10px;color:var(--mist);font-weight:400;margin-left:6px;}
+
+  /* ===== NODE ===== */
+  .node{appearance:none;font-family:var(--sans);text-align:left;cursor:pointer;width:100%;
+        background:#fff;border:2px solid var(--neu);border-left-width:6px;border-radius:11px;
+        padding:7px 8px;display:flex;flex-direction:column;gap:5px;
+        transition:transform .14s ease,box-shadow .14s ease;}
+  .node .top{display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+  .node .nm{font-family:var(--serif);font-weight:700;font-size:12.5px;line-height:1.25;}
+  .node .st{font-size:10px;font-weight:700;line-height:1.3;}
+  .node.hot{border-color:var(--hot);border-left-color:var(--hot);}
+  .node.hot .st{color:var(--hot);}
+  .node.hum{border-color:var(--hum);border-left-color:var(--hum);}
+  .node.hum .st{color:var(--hum);}
+  .node.neu{border-color:var(--line);border-left-color:var(--neu);}
+  .node.neu .nm{color:var(--gray);}
+  .node.neu .st{color:var(--mist);}
+  .node:hover,.node:focus-visible{transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--mist);outline:none;}
+  .node.on{transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--ink);}
+
+  /* ===== PANEL ===== */
+  .panel{position:sticky;top:16px;background:#fff;border:2px solid var(--ink);border-radius:14px;
+         padding:12px 13px 13px;min-height:360px;}
+  .panel .ph{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:3px;}
+  .panel h3{font-family:var(--serif);font-size:15px;font-weight:700;margin:0;}
+  .meta{font-size:10.5px;color:var(--mist);margin:0 0 9px;}
+  .row{border-top:1.5px dashed var(--line);padding:7px 0 0;margin-top:7px;}
+  .row:first-of-type{border-top:none;margin-top:0;padding-top:0;}
+  .lbl{font-family:var(--mono);font-size:9px;font-weight:700;color:#fff;background:var(--ink);
+       border-radius:4px;padding:1px 5px;margin-right:6px;vertical-align:1px;}
+  .row p{margin:0;font-size:11.5px;color:var(--gray);line-height:1.6;}
+  .row p+p{margin-top:4px;}
+  .row b{color:var(--ink);}
+  .steps{margin:5px 0 0;padding:0;list-style:none;}
+  .steps li{font-size:11px;color:var(--gray);line-height:1.5;padding:3px 0 3px 0;border-top:1px dashed var(--line);}
+  .steps li:first-child{border-top:none;}
+  .steps li b{color:var(--ink);}
+  .tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px;}
+  .tag{border-radius:999px;padding:2.5px 7px;font-size:10px;font-weight:600;background:var(--neu-w);color:var(--gray);}
+  .panel.hot .tag{background:var(--hot-w);color:var(--hot);}
+  .panel.hum .tag{background:var(--hum-w);color:var(--hum);}
+  .hint{font-size:11.5px;color:var(--gray);line-height:1.65;}
+  .hint b{color:var(--ink);}
+  .hint ul{margin:6px 0 0;padding-left:16px;}
+  .hint li{margin-bottom:5px;}
+
+  .foot{margin-top:14px;padding-top:10px;border-top:1.5px solid var(--line);
+        font-size:10.5px;color:var(--mist);line-height:1.7;}
+  .foot b{color:var(--gray);}
+
+  @media (max-width:960px){
+    .stage{grid-template-columns:1fr;}
+    .panel{position:static;}
+    .plot{overflow-x:auto;}
+    .grid{min-width:640px;}
+  }
+  @media (prefers-reduced-motion:reduce){ .node{transition:none;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">企划AI · 板块优先级矩阵 v1</div>
+  <h1>战略重要性 × AI实现难度:6个月先做哪三个</h1>
+  <div class="sub">
+    <b>位置</b>两条轴的交点<i>／</i><b>颜色</b>本轮AI取舍<i>／</i><b>方标签</b>优先级<i>／</i>共8个业务板块、7个节点(大盘趋势与竞品调研链路共用,合并展示)
+  </div>
+
+  <div class="key">
+    <span class="lead">圆徽章=本轮AI取舍</span>
+    <span class="rb hot">6个月重点AI化 ×3</span>
+    <span class="rb hum">AI不做,人要投入 ×2</span>
+    <span class="rb neu">本轮不启动 ×2</span>
+    <span class="sep"></span>
+    <span class="lead">方标签=优先级</span>
+    <span class="p">P0</span><span class="p">P1</span><span class="p">P2</span><span class="p">P3</span>
+    <span class="sep"></span>
+    <span class="tail">鼠标移到板块上看详情</span>
+  </div>
+
+  <div class="stage">
+
+    <div class="plot">
+      <div class="ytitle">战略重要性 <small>越往上杠杆越大</small></div>
+
+      <div class="grid" id="grid">
+        <!-- row 最高 -->
+        <div class="yl">最高</div>
+        <div class="cell"></div>
+        <div class="cell">
+          <button class="node hot" data-k="fp">
+            <span class="top"><span class="p">P0</span><span class="nm">本品复盘</span></span>
+            <span class="st">做一半 · 唯一在6个月内跑到agent化</span>
+          </button>
+        </div>
+        <div class="cell"></div>
+        <div class="cell">
+          <button class="node hot" data-k="cx">
+            <span class="top"><span class="p">P0</span><span class="nm">产品策略/自检清单</span></span>
+            <span class="st">做一半 · 只上①提问层</span>
+          </button>
+        </div>
+
+        <!-- row 高 -->
+        <div class="yl">高</div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell">
+          <button class="node hum" data-k="ui">
+            <span class="top"><span class="p">P2</span><span class="nm">用户洞察</span></span>
+            <span class="st">AI不做,人要投入</span>
+          </button>
+        </div>
+        <div class="cell"></div>
+
+        <!-- row 中 -->
+        <div class="yl">中</div>
+        <div class="cell"></div>
+        <div class="cell">
+          <button class="node hot" data-k="td">
+            <span class="top"><span class="p">P1</span><span class="nm">大盘趋势+竞品调研</span></span>
+            <span class="st">基本做完 · 两级能力全量推广</span>
+          </button>
+        </div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+
+        <!-- row 低 -->
+        <div class="yl">低</div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell">
+          <button class="node neu" data-k="sf">
+            <span class="top"><span class="p">P2</span><span class="nm">销售预估</span></span>
+            <span class="st">不做</span>
+          </button>
+        </div>
+        <div class="cell">
+          <button class="node hum" data-k="tc">
+            <span class="top"><span class="p">P3</span><span class="nm">技术调研</span></span>
+            <span class="st">AI不做,不由企划部掌控</span>
+          </button>
+        </div>
+
+        <!-- row 最低 -->
+        <div class="yl">最低</div>
+        <div class="cell">
+          <button class="node neu" data-k="kw">
+            <span class="top"><span class="p">P3</span><span class="nm">单品坑位信息维护</span></span>
+            <span class="st">不做</span>
+          </button>
+        </div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+
+        <!-- x axis -->
+        <div class="corner xaxis"></div>
+        <div class="xl xaxis">最低</div>
+        <div class="xl xaxis">低</div>
+        <div class="xl xaxis">中</div>
+        <div class="xl xaxis">高</div>
+        <div class="xtitle">AI实现难度 →<small>越往右AI越接不住</small></div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel"></div>
+  </div>
+
+  <div class="foot">
+    <b>读图口径</b>:两条轴和优先级都取自计划"三"的板块表,未改名、未重排。<br>
+    <b>不在这张图上的一项</b>:跨品类策略战略重要性最高,但它不是8大板块之一——本轮由战略会人工产出,作为上游输入下发(见计划"五")。
+  </div>
+</div>
+
+<script>
+(function(){
+  var HINT = '<div class="ph"><h3>怎么读这张图</h3></div>' +
+    '<p class="meta">把鼠标移到任意板块上,这里会换成它的详情</p>' +
+    '<div class="hint">' +
+    '<b>结论:6个月只做左上角和正上方那三个。</b>' +
+    '<ul>' +
+    '<li><b>选法不是按难度,是按"战略重要性够高且AI接得住"。</b>本品复盘(高价值·低难度)最先跑通;产品策略难但杠杆最大,只做最容易的①提问层;大盘趋势难度低、能全量推广。</li>' +
+    '<li><b>横轴靠右不等于放弃。</b>用户洞察、技术调研标的是"AI不做",不是"不做"——恰恰因为AI结构性接不住,才是人腾出精力后要重点投入的方向。</li>' +
+    '<li><b>真正被搁置的只有两个</b>:销售预估、单品坑位信息维护,战略重要性不足以占用本轮资源,留待专业团队评估。</li>' +
+    '</ul></div>';
+
+  var D = {
+    cx:{ tone:'hot', p:'P0', nm:'产品策略/自检清单',
+      meta:'方法论层+输出层　·　Claude Opus 4.8,高effort',
+      imp:['最高','影响订货和资源分配,杠杆最大'],
+      diff:['高','能提炼重复模式,但萃取准确性需人工兜底'],
+      six:'<b>做一半。</b>自检报告能力上线、推广到核心品类;决策建议、直接产出策略两层更难,留待专业团队。',
+      steps:[
+        ['①提问','企划案草稿+框架自检清单 → 自检报告。第4个月正式上线,第6个月从试点推广到核心品类'],
+        ['②给选项','要等复盘、趋势的当季信号稳定,12个月后'],
+        ['③综合出实质产出','依赖各板块结论都成熟,远期']
+      ],
+      skills:['企划方案自检审阅','自检清单缺口识别','策略选项生成(候选)']
+    },
+    fp:{ tone:'hot', p:'P0', nm:'本品复盘',
+      meta:'输出层　·　Claude Sonnet 5,标准effort',
+      imp:['最高','每季必做,是策略讨论的地基'],
+      diff:['低','数据结构清晰,规则无歧义'],
+      six:'<b>做一半。</b>4P归因框架(定量为主)跑通、全量推广、agent化;Product定量完善不设死线,不阻塞推广。',
+      steps:[
+        ['①4P初步归因','Place/Promotion/Price用现成定量数据,Product用退货退款率+VOC先做粗判。3-4个月验证纠偏'],
+        ['②4P完善归因','补部门复盘文档和Product定量数据,长期打磨,不设死线'],
+        ['③agent化','5-6个月触发方式从人工问升级为定时任务;查不到原因自动生成下钻任务派给渠道/投放,进双周会当面回答']
+      ],
+      skills:['4P归因初稿生成']
+    },
+    td:{ tone:'hot', p:'P1', nm:'大盘趋势+竞品调研',
+      meta:'输出层+方法论层　·　Claude Sonnet 5,标准effort　·　两个业务链路共用,合并为一个节点',
+      imp:['中','辅助信息,可晚于P0启动'],
+      diff:['低','结合本品数据给优化建议是强项,原始数据交给知衣'],
+      six:'<b>基本做完。</b>趋势总结、策略建议两级能力上线并推广到全部8大品类;知衣的接入路径是长期变量。',
+      steps:[
+        ['①趋势总结+关联判断','在知衣自己的工具里做,先由配件品类调教提问方法,再沉淀成趋势规则手册同步给其他品类'],
+        ['②直接出策略建议','手动下载报告,喂给Claude结合本品数据出企划案优化建议;建议进当季策略建议方向,不进自检清单'],
+        ['待确认','知衣能不能开放数据——大概率只能用它自己的工具,1个月内和销售确认。可信度已实测偏低(市场规模等关键数字曾偏差近3倍),必须用情报通交叉核对']
+      ],
+      skills:['趋势建议生成']
+    },
+    ui:{ tone:'hum', p:'P2', nm:'用户洞察',
+      meta:'方法论层+输出层　·　Claude Sonnet 5,标准effort',
+      imp:['高','但价值不在AI这一侧:深度洞察是人该重点投入的方向'],
+      diff:['中','AI能整理"用户说了什么"(报告、评论),挖不到"用户没说的";还取决于数据能否稳定提供'],
+      six:'<b>AI不做,人要投入。</b>6个月内不建AI能力,留待专业团队评估;深度洞察本身是负责人腾出精力后的投入重心之一。',
+      steps:[
+        ['为什么AI接不住','要回答的是用户没说出来、甚至自己都没意识到的需求——靠深度访谈和田野观察,是定性研究方法论的事'],
+        ['所以人做什么','企划部负责人带团队组织深度用户访谈,挖别人挖不到的信号']
+      ],
+      skills:[]
+    },
+    tc:{ tone:'hum', p:'P3', nm:'技术调研',
+      meta:'输出层　·　Claude Sonnet 5,标准effort(技术库就绪后即为标准语义匹配)',
+      imp:['低(AI层面)','但技术创新投入够不够,是战略会跨品类资源分配要回答的问题'],
+      diff:['高','不是AI能力问题,是前置条件不具备:卡在体感科学院技术库进度'],
+      six:'<b>AI不做,且不由企划部掌控。</b>要不要加大技术投入属于跨品类策略的判断,不在本轮AI化范围内。',
+      steps:[
+        ['卡在哪','技术库还没结构化,AI顶多做信息整理;技术创新本身靠研发投入和时间积累'],
+        ['预期管理','进度不由企划部推进,汇报时按外部依赖处理']
+      ],
+      skills:[]
+    },
+    sf:{ tone:'neu', p:'P2', nm:'销售预估',
+      meta:'输出层　·　Claude Haiku 4.5,低effort',
+      imp:['低','不改变战略判断,还可能被误当依据'],
+      diff:['中','历史数据+预算目标校准逻辑已理清,按逻辑算'],
+      six:'<b>不做。</b>6个月内不启动,留待专业团队评估。',
+      steps:[['为什么排后面','难度不高,但做出来不改变任何战略判断——本轮资源应该压在改变判断的板块上']],
+      skills:[]
+    },
+    kw:{ tone:'neu', p:'P3', nm:'单品坑位信息维护',
+      meta:'输出层　·　Claude Haiku 4.5,低effort',
+      imp:['最低','纯执行,不产生战略增量'],
+      diff:['最低','规则最清楚;但错误有代价,需定期抽查兜底'],
+      six:'<b>不做。</b>6个月内不启动,留待专业团队评估。',
+      steps:[['为什么排最后','最容易做,也最不值得先做:AI化它只省执行时间,不提升判断质量']],
+      skills:[]
+    }
+  };
+
+  var panel = document.getElementById('panel');
+
+  function render(k){
+    var d = D[k];
+    panel.className = 'panel ' + d.tone;
+    var h = '<div class="ph"><span class="p">'+d.p+'</span><h3>'+d.nm+'</h3></div>' +
+            '<p class="meta">'+d.meta+'</p>' +
+            '<div class="row"><p><span class="lbl">重要性</span><b>'+d.imp[0]+'</b>——'+d.imp[1]+'</p>' +
+            '<p><span class="lbl">难度</span><b>'+d.diff[0]+'</b>——'+d.diff[1]+'</p></div>' +
+            '<div class="row"><p><span class="lbl">6个月</span>'+d.six+'</p></div>' +
+            '<div class="row"><ul class="steps">' +
+            d.steps.map(function(s){return '<li><b>'+s[0]+'</b>　'+s[1]+'</li>';}).join('') +
+            '</ul></div>';
+    if(d.skills.length){
+      h += '<div class="row"><p><span class="lbl">Skill</span>配套的执行步骤说明</p><div class="tags">' +
+           d.skills.map(function(t){return '<span class="tag">'+t+'</span>';}).join('') + '</div></div>';
+    }
+    panel.innerHTML = h;
+  }
+
+  function reset(){ panel.className = 'panel'; panel.innerHTML = HINT; }
+  reset();
+
+  var nodes = [].slice.call(document.querySelectorAll('.node'));
+  nodes.forEach(function(n){
+    function on(){
+      nodes.forEach(function(x){ x.classList.remove('on'); });
+      n.classList.add('on');
+      render(n.dataset.k);
+    }
+    n.addEventListener('mouseenter', on);
+    n.addEventListener('focus', on);
+    n.addEventListener('click', on);
+  });
+  document.getElementById('grid').addEventListener('mouseleave', function(){
+    nodes.forEach(function(x){ x.classList.remove('on'); });
+    reset();
+  });
+})();
+</script>
+</body>
+</html>
